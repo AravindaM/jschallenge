@@ -1,0 +1,36 @@
+<div class="jumbotron">
+  <h3>Smove's Car booking System</h3>
+  <!--<p class="lead">-->
+  <!--Now it's your turn.</br>-->
+  <!--Blow us away with your awesomeness.-->
+  <!--</p>-->
+  <!--<p><a class="btn btn-lg btn-success" ng-href="#/"><span class="glyphicon glyphicon-ok"></span></a></p>-->
+  <h4>Search Car availability</h4>
+
+  <div ng-controller="MyController">
+    <form class="form-horizontal" role="form">
+      <div class="form-group">
+        <label for="inputDate" class="col-sm-4 control-label">Booking Date</label>
+
+        <div class="col-sm-4">
+          <input id="inputDate" type="text" class="form-control" placeholder="Format (22-10-2015)"  ng-model="searchObj.date"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="inputDuration" class="col-sm-4 control-label">Duration</label>
+
+        <div class="col-sm-4">
+          <input class="form-control" id="inputDuration" placeholder="Duration(Hours)" ng-model="searchObj.duration">
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-4"></div>
+        <div class="col-sm-4">
+          <input type="submit" class="btn btn-info btn-md" value="Search" ng-click="searchObj.submitTheForm()">
+        </div>
+      </div>
+    </form>
+
+  </div>
+
+</div>
