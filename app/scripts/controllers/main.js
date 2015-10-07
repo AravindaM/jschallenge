@@ -19,7 +19,7 @@ mainApp.config(['$routeProvider', function ($routeProvider) {
 
         when('/searchCars', {
             templateUrl: 'views/searchCar.html',
-            controller: 'searchCarsController'
+            controller: 'CarSearchViewController'
         }).
 
         when('/showCarsList', {
@@ -57,7 +57,7 @@ mainApp.controller('availableCarsController', function ($scope, $http) {
 
 });
 
-mainApp.controller('searchCarsController', function ($scope, $http) {
+mainApp.controller('CarSearchViewController', function ($scope, $http) {
     //Nothing to do
 });
 
