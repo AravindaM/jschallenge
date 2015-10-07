@@ -1,34 +1,36 @@
-<div class="jumbotron">
-    <h3>Smove's Car booking System</h3>
-    <!--<p class="lead">-->
-    <!--Now it's your turn.</br>-->
-    <!--Blow us away with your awesomeness.-->
-    <!--</p>-->
-    <!--<p><a class="btn btn-lg btn-success" ng-href="#/"><span class="glyphicon glyphicon-ok"></span></a></p>-->
-    <h4>Search Car availability</h4>
-
+<br class="jumbotron">
+    <h4 style="text-align: center">Search Car availability</h4>
+    </br>
     <div class="container" ng-controller="CarSearchController">
-        <form class="form-horizontal" role="form">
+        <form name="form" class="form-horizontal" role="form">
             <div class="form-group">
-                <label for="inputDate" class="col-sm-4 control-label">Booking Date</label>
+                <label for="bookingDate" class="col-sm-4 control-label">Booking Date</label>
 
                 <div class="col-sm-4">
-                    <input id="inputDate" type="text" class="form-control" placeholder="Format (22-10-2015)"
-                           ng-model="searchObj.date"/>
+                    <input id="bookingDate" type="text" class="form-control" placeholder="Format (22-10-2015)"
+                           ng-pattern='/^(0?[1-9]|1\d|2[0-8]|29(?=[-]\d?\d[-](?!1[01345789]00|2[1235679]00)\d\d(?:[02468][048]|[13579][26]))|30(?![-]0?2)|31(?=[-]0?[13578]|[-]1[02]))[-](0?[1-9]|1[0-2])[-]([12]\d{3})$/'
+                           ng-model="searchObj.date"
+                            name="bookingDate" required/>
                 </div>
             </div>
             <div class="form-group">
-                <label for="inputDuration" class="col-sm-4 control-label">Duration</label>
+                <label for="duration" class="col-sm-4 control-label">Duration</label>
 
                 <div class="col-sm-4">
-                    <input class="form-control" id="inputDuration" placeholder="Duration(Hours)"
-                           ng-model="searchObj.duration">
+                    <input class="form-control" id="duration" placeholder="Duration(Hours)"
+                           ng-model="searchObj.duration" name="duration" ng-pattern="/^[1-9]+$/" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <br class="col-sm-8" align="center">
+                    <span ng-show="form.bookingDate.$error.pattern">&#62; Incorrect Format, should be DD-MM-YYYY</span>
+                    <span ng-show="form.duration.$error.pattern">&#62; Invalid value for booking duration</span>
                 </div>
             </div>
             <div class="form-group">
                 <div class="col-sm-4"></div>
-                <div class="col-sm-4">
-                    <input type="submit" class="btn btn-info btn-md" value="Search" ng-click="submitTheForm()">
+                <div class="col-sm-4" align="right">
+                    <input type="submit" class="btn btn-info btn-md" ng-disabled="form.$invalid" value="Search" ng-click="submitTheForm()">
                 </div>
             </div>
         </form>
