@@ -4,11 +4,14 @@
  * @ngdoc function
  * @name jschallengeApp.controller:MainCtrl
  * @description
+ * @module - ngRoute, ngSanitize
  * # MainCtrl
+ * 
  * Controller of the jschallengeApp
  */
 var mainApp = angular.module('jschallengeApp', ['ngRoute',  'ngSanitize']);
 
+//Handles routing and direct to the controller and return the view associated with.
 mainApp.config(['$routeProvider', function ($routeProvider) {
   $routeProvider
 
@@ -31,11 +34,12 @@ mainApp.config(['$routeProvider', function ($routeProvider) {
 
 }]);
 
+//Handles the home page.
 mainApp.controller('MainCtrl', function ($scope, $http) {
   //Nothing to do
 });
 
-
+//Handles the default request to get the car locations 
 mainApp.controller('availableCarsController', function ($scope, $routeParams, $http) {
 
   if ($scope.carLocations === undefined) {
@@ -58,25 +62,31 @@ mainApp.controller('availableCarsController', function ($scope, $routeParams, $h
 
 });
 
+//Handles car search view
 mainApp.controller('CarSearchViewController', function ($scope, $http) {
   //Nothing to do
 });
 
+//Handles the car seach logic
 mainApp.controller('CarSearchController', function ($scope, $http, $sce) {
 
   $scope.carLocations = "undefined";
   $scope.submitTheForm = function () {
 
+    //Get the input values for date, time and duration.
     var startDateStr = $scope.searchObj.date; //2015-10-23
     var time = $scope.searchObj.time; //08:45
     var duration = $scope.searchObj.duration;  //3
 
+    // Set the hours of the date object from the time input
     startDateStr.setHours(time.getHours(), time.getMinutes(), time.getSeconds(), 0);
     var startDate = startDateStr.getTime();
-
+    
+    //set the end date by adding startdate and duration, millisections for UTC start date
     var endDate = startDate + parseInt(duration) * 3600 * 1000;
     var url = 'http://jschallenge.smove.sg/provider/1/availability?book_start=' + startDate + '&book_end=' + endDate;
 
+    //on success response generate the cars list html and bind to the element.
     $http.get(url).success(function (result) {
       console.log('Result from the API call:', result);
       $scope.carLocationResults =  generateCarsList(result);
@@ -89,6 +99,7 @@ mainApp.controller('CarSearchController', function ($scope, $http, $sce) {
 
 });
 
+//Generate cars list html.
 var generateCarsList = function (carLocations) {
 
   var htmlString = '<div class="jumbotron"><h4>Available Cars</h4><table class="table  table-hover"><tbody><tr><td></td><td><blockquote>Car Collection Location</blockquote></td>';
