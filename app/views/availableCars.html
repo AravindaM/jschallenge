@@ -1,18 +1,33 @@
 <div class="jumbotron">
 
   <h4>Available Cars</h4>
-
+  </br>
+  <div class="panel-heading">
+    Search Location : <input type="text" ng-model="filterTxt.parking_name">
+  </div>
+  </br>
   <table class="table  table-hover">
     <tbody>
+    <thead>
     <tr>
-      <td></td>
-      <td><blockquote>Car Collection Location</blockquote></td>
-      <td><blockquote>Available Cars</blockquote></td>
-      <td><blockquote>Details</blockquote></td>
+      <th></th>
+      <th ng-click="sortBy='parking_name';reverse=!reverse">
+        <blockquote>Car Collection Location</blockquote>
+      </th>
+      <th ng-click="sortBy='cars_available';reverse=!reverse">
+        <blockquote>Available Cars</blockquote>
+      </th>
+      <th ng-click="sortBy='description';reverse=!reverse">
+        <blockquote>Details</blockquote>
+      </th>
     </tr>
-    <tr ng-repeat="carLocation in carLocations">
+    </thead>
+    <tbody>
+    <tr ng-repeat="carLocation in carLocations | filter : filterTxt | orderBy:sortBy:reverse ">
       <td>{{$index+1}}</td>
-      <td>{{carLocation.parking_name}}<a href="http://maps.google.com/maps?z=12&t=m&q=loc:{{carLocation.latitude}}+{{carLocation.longitude}}"><h6>(Map &#62;&#62;)</h6></a> </td>
+      <td>{{carLocation.parking_name}}<a
+        href="http://maps.google.com/maps?z=12&t=m&q=loc:{{carLocation.latitude}}+{{carLocation.longitude}}"><h6>(Map
+        &#62;&#62;)</h6></a></td>
       <td>{{carLocation.cars_available}}</td>
       <td>{{carLocation.description}}</td>
     </tr>
