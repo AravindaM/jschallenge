@@ -53,12 +53,19 @@
     <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
     <script src="bower_components/angular-ui-date/src/date.js"></script>
     <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
+    <script src="bower_components/angular-simple-logger/dist/angular-simple-logger.js"></script>
+    <script src="bower_components/lodash/lodash.js"></script>
+    <script src="bower_components/angular-google-maps/dist/angular-google-maps.js"></script>
+    <!--<script src="bower_components/googleMaps/google-maps.js"></script>-->
     <!-- endbower -->
     <!-- endbuild -->
 
+    <script src="https://maps.googleapis.com/maps/api/js"></script>
     <!-- build:js({.tmp,app}) scripts/scripts.js -->
     <script src="scripts/app.js"></script>
     <script src="scripts/controllers/main.js"></script>
+    <script src="scripts/services/locationSearchFactory.js"></script>
+    <script src="scripts/services/mapsCreatorFactory.js"></script>
     <!-- endbuild -->
 </body>
 

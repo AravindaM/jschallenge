@@ -10,26 +10,27 @@
     <tbody>
     <thead>
     <tr>
-      <th></th>
-      <th ng-click="sortBy='parking_name';reverse=!reverse">
+      <!--<th></th>-->
+      <th ng-click="doSort('parking_name')">
         <blockquote>Car Collection Location</blockquote>
       </th>
-      <th ng-click="sortBy='cars_available';reverse=!reverse">
+      <th ng-click="doSort('cars_available')">
         <blockquote>Available Cars</blockquote>
       </th>
-      <th ng-click="sortBy='description';reverse=!reverse">
-        <blockquote>Details</blockquote>
-      </th>
+      <!--<th ng-click="doSort('description')">-->
+        <!--<blockquote>Details</blockquote>-->
+      <!--</th>-->
     </tr>
     </thead>
     <tbody>
     <tr ng-repeat="carLocation in carLocations | filter : filterTxt | orderBy:sortBy:reverse ">
-      <td>{{$index+1}}</td>
-      <td>{{carLocation.parking_name}}<a
+      <!--<td>{{$index+1}}</td>-->
+     <!-- <td>{{carLocation.parking_name}}<a
         href="http://maps.google.com/maps?z=12&t=m&q=loc:{{carLocation.latitude}}+{{carLocation.longitude}}"><h6>(Map
-        &#62;&#62;)</h6></a></td>
+        &#62;&#62;)</h6></a></td>-->
+      <td><a href="#/goToLocation/{{carLocation.latitude}}/{{carLocation.longitude}}/{{carLocation.parking_shortname}}">{{carLocation.parking_name}}</a></td>
       <td>{{carLocation.cars_available}}</td>
-      <td>{{carLocation.description}}</td>
+      <!--<td>{{carLocation.description}}</td>-->
     </tr>
     </tbody>
   </table>

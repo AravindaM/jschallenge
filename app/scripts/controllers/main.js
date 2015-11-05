@@ -6,7 +6,7 @@
  * @description
  * @module - ngRoute, ngSanitize
  * # MainCtrl
- * 
+ *
  * Controller of the jschallengeApp
  */
 var mainApp = angular.module('jschallengeApp', ['ngRoute',  'ngSanitize']);
@@ -30,6 +30,11 @@ mainApp.config(['$routeProvider', function ($routeProvider) {
       controller: 'availableCarsController'
     }).
 
+    when('/goToLocation/:lat/:long/:city', {
+      templateUrl: 'views/mapView.html',
+      controller: 'mapViewController'
+    }).
+
     otherwise({redirectTo: '/'});
 
 }]);
@@ -39,26 +44,28 @@ mainApp.controller('MainCtrl', function ($scope, $http) {
   //Nothing to do
 });
 
-//Handles the default request to get the car locations 
-mainApp.controller('availableCarsController', function ($scope, $routeParams, $http) {
+//Handles the default request to get the car locations
+mainApp.controller('availableCarsController', function ($scope,  locationSearchFactory) {
 
-  if ($scope.carLocations === undefined) {
-    // Query for a booking in 1 day from now, for 2 hours.
-    var start = Date.now() + 24 * 3600 * 1000;
-    var end = start + 2 * 3600 * 1000;
+  $scope.sortBy = 'parking_name';
+  $scope.reverse = false;
+  $scope.carLocations = [];
+  //$scope.appSettings = appsettings;
 
-    //var start = Date.now();
-    //var end = start + .5 * 3600 * 1000;
-    var url = 'http://jschallenge.smove.sg/provider/1/availability?book_start=' + start + '&book_end=' + end;
-
-    $http.get(url).success(function (result) {
-      //console.log('Result from the API call:', result);
-      $scope.carLocations = result;
+  function searchCarLocations() {
+    locationSearchFactory.getLocations().success(function (carLocations) {
+      $scope.carLocations = carLocations;
     }).error(function (err) {
-      // Hum, this is odd ... contact us...
       console.error(err);
     });
   }
+
+  searchCarLocations();
+
+  $scope.doSort = function (propName) {
+    $scope.sortBy = propName;
+    $scope.reverse = !$scope.reverse;
+  };
 
 });
 
@@ -67,10 +74,106 @@ mainApp.controller('CarSearchViewController', function ($scope, $http) {
   //Nothing to do
 });
 
+//Handles car search view
+/*mainApp.controller('mapViewController', function ($scope, $http, mapsCreatorFactory) {
+  mapsCreatorFactory.createByCoords(40.454018, -3.509205, function (marker) {
+    marker.options.labelContent = 'Autentia';
+    $scope.autentiaMarker = marker;
+  });
+
+  $scope.address = '';
+
+  $scope.map = {
+    center: {
+      latitude: $scope.autentiaMarker.latitude,
+      longitude: $scope.autentiaMarker.longitude
+    },
+    zoom: 12,
+    markers: [],
+    control: {},
+    options: {
+      scrollwheel: false
+    }
+  };
+
+  $scope.map.markers.push($scope.autentiaMarker);
+
+  $scope.addCurrentLocation = function () {
+    mapsCreatorFactory.createByCurrentLocation(function (marker) {
+      marker.options.labelContent = 'You´re here';
+      $scope.map.markers.push(marker);
+      refresh(marker);
+    });
+  };
+
+  $scope.addAddress = function () {
+    var address = $scope.address;
+    if (address !== '') {
+      mapsCreatorFactory.createByAddress(address, function (marker) {
+        $scope.map.markers.push(marker);
+        refresh(marker);
+      });
+    }
+  };
+
+  function refresh(marker) {
+    $scope.map.control.refresh({
+      latitude: marker.latitude,
+      longitude: marker.longitude
+    });
+  }
+});*/
+
+mainApp.controller('mapViewController', function ($scope, $routeParams) {
+
+  var mapOptions = {
+    zoom: 13,
+    center: new google.maps.LatLng($routeParams.lat, $routeParams.long),
+    mapTypeId: google.maps.MapTypeId.TERRAIN
+  };
+
+  $scope.map = new google.maps.Map(document.getElementById('map'), mapOptions);
+
+  $scope.markers = [];
+
+  var infoWindow = new google.maps.InfoWindow();
+
+  var createMarker = function (info){
+
+    var marker = new google.maps.Marker({
+      map: $scope.map,
+      position: new google.maps.LatLng(info.lat, info.long),
+      title: info.city
+    });
+    marker.content = '<div class="infoWindowContent">' + info.city + '</div>';
+
+    google.maps.event.addListener(marker, 'click', function(){
+      infoWindow.setContent('<h2>' + marker.title + '</h2>' + marker.content);
+      infoWindow.open($scope.map, marker);
+    });
+
+    $scope.markers.push(marker);
+
+  };
+
+  createMarker({
+    "lat": $routeParams.lat,
+    "long": $routeParams.long,
+    "city": $routeParams.city
+  });
+
+  $scope.openInfoWindow = function(e, selectedMarker){
+    e.preventDefault();
+    google.maps.event.trigger(selectedMarker, 'click');
+  }
+
+});
+
 //Handles the car seach logic
 mainApp.controller('CarSearchController', function ($scope, $http, $sce) {
 
-  $scope.carLocations = "undefined";
+  $scope.carLocationResults = "undefined";
+
   $scope.submitTheForm = function () {
 
     //Get the input values for date, time and duration.
@@ -81,7 +184,7 @@ mainApp.controller('CarSearchController', function ($scope, $http, $sce) {
     // Set the hours of the date object from the time input
     startDateStr.setHours(time.getHours(), time.getMinutes(), time.getSeconds(), 0);
     var startDate = startDateStr.getTime();
-    
+
     //set the end date by adding startdate and duration, millisections for UTC start date
     var endDate = startDate + parseInt(duration) * 3600 * 1000;
     var url = 'http://jschallenge.smove.sg/provider/1/availability?book_start=' + startDate + '&book_end=' + endDate;
@@ -89,7 +192,7 @@ mainApp.controller('CarSearchController', function ($scope, $http, $sce) {
     //on success response generate the cars list html and bind to the element.
     $http.get(url).success(function (result) {
       console.log('Result from the API call:', result);
-      $scope.carLocationResults =  generateCarsList(result);
+      $scope.carLocationResults = result;
     }).error(function (err) {
       // Hum, this is odd ... contact us...
       console.error(err);
@@ -98,28 +201,3 @@ mainApp.controller('CarSearchController', function ($scope, $http, $sce) {
   };
 
 });
-
-//Generate cars list html.
-var generateCarsList = function (carLocations) {
-
-  var htmlString = '<div class="jumbotron"><h4>Available Cars</h4><table class="table  table-hover"><tbody><tr><td></td><td><blockquote>Car Collection Location</blockquote></td>';
-
-  htmlString += '<td><blockquote>Available Cars</blockquote></td><td><blockquote>Details</blockquote></td></tr>';
-
-
-  var index = 1;
-  for (var carLocation in carLocations) {
-    htmlString += '<tr>'
-      + '<td>' + index + '</td>'
-      + '<td>' + carLocations[carLocation].parking_name + '<a href="http://maps.google.com/maps?z=12&t=m&q=loc:' + carLocations[carLocation].latitude + '+' + carLocations[carLocation].longitude + '"><h6>(Map &#62;&#62;)</h6></a></td>';
-      +'<td>' + carLocations[carLocation].cars_available + '</td>' + +'<td>' + carLocations[carLocation].description + '</td>' +
-    '</tr>'
-  }
-
-  '</tbody>' +
-  '</table>' +
-  '</div>';
-
-  return htmlString;
-
-};
